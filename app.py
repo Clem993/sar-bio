@@ -36,9 +36,9 @@ CHART_COLORS = [
     "#1E3A5F", "#E3D9F2", "#C76BA3", "#4A90A4", "#7B5EA7",
 ]
 
-# Asset paths (absolute)
-LOGO_PATH = os.path.join(SCRIPT_DIR, 'assets', 'Logo.png')
-SLOGAN_PATH = os.path.join(SCRIPT_DIR, 'assets', 'Slogan.png')
+# Asset paths (in root folder, not assets/)
+LOGO_PATH = os.path.join(SCRIPT_DIR, 'Logo.png')
+SLOGAN_PATH = os.path.join(SCRIPT_DIR, 'Slogan.png')
 
 # Page configuration
 st.set_page_config(
@@ -129,13 +129,13 @@ data = load_data()
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# Logo
+# Logo (in root folder)
 if os.path.exists(LOGO_PATH):
     st.sidebar.image(LOGO_PATH, width=150)
 else:
     st.sidebar.markdown(f"<div style='text-align:center;font-size:1.6em;font-weight:700;color:{BRAND['deep_blue']};'>excelra</div>", unsafe_allow_html=True)
 
-# Slogan
+# Slogan (in root folder)
 if os.path.exists(SLOGAN_PATH):
     st.sidebar.image(SLOGAN_PATH, width=180)
 else:
