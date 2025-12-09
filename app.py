@@ -59,10 +59,10 @@ def find_asset(possible_names):
     
     return None
 
-# Find assets - now including SVG files
-LOGO_PATH = find_asset(['Logo.png', 'logo.png', 'Logo.svg', 'logo.svg', 'Logo.PNG', 'Logo.SVG'])
-SLOGAN_PATH = find_asset(['Slogan.png', 'slogan.png', 'Slogan.svg', 'slogan.svg', 'Slogan.PNG'])
-WAVE_PATH = find_asset(['Wave.png', 'wave.png', 'Wave2.png', 'wave2.png', 'Wave.svg', 'Double Wave.svg'])
+# Find assets - now including png files
+LOGO_PATH = find_asset(['Logo.png', 'logo.png', 'Logo.png', 'logo.png', 'Logo.PNG', 'Logo.png'])
+SLOGAN_PATH = find_asset(['Slogan.png', 'slogan.png', 'Slogan.png', 'slogan.png', 'Slogan.PNG'])
+WAVE_PATH = find_asset(['Wave.png', 'wave.png', 'Wave2.png', 'wave2.png', 'Wave.png', 'Double Wave.png'])
 GOSTAR_LOGO_PATH = find_asset(['gostar_logo.png', 'GOSTAR_logo.png', 'gostar-logo.png', 'GOSTAR.png'])
 
 # Page configuration
@@ -141,7 +141,7 @@ st.markdown(f"""
     
     /* Center sidebar logo */
     .sidebar-logo-container {{ text-align: center; padding: 15px 10px; }}
-    .sidebar-logo-container svg {{ max-width: 140px; height: auto; }}
+    .sidebar-logo-container png {{ max-width: 140px; height: auto; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -160,15 +160,15 @@ data = load_data()
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# Logo - handle both PNG and SVG
+# Logo - handle both PNG and png
 if LOGO_PATH and os.path.exists(LOGO_PATH):
-    if LOGO_PATH.lower().endswith('.svg'):
-        # Read SVG content and embed it
+    if LOGO_PATH.lower().endswith('.png'):
+        # Read png content and embed it
         with open(LOGO_PATH, 'r') as f:
-            svg_content = f.read()
+            png_content = f.read()
         st.sidebar.markdown(f"""
         <div class="sidebar-logo-container">
-            {svg_content}
+            {png_content}
         </div>
         """, unsafe_allow_html=True)
     else:
