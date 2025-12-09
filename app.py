@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 import os
+import base64
 
 # Get the directory where this script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -36,9 +37,24 @@ CHART_COLORS = [
     "#1E3A5F", "#E3D9F2", "#C76BA3", "#4A90A4", "#7B5EA7",
 ]
 
-# Asset paths (in root folder, not assets/)
+# Asset paths (in root folder)
 LOGO_PATH = os.path.join(SCRIPT_DIR, 'Logo.png')
 SLOGAN_PATH = os.path.join(SCRIPT_DIR, 'Slogan.png')
+WAVE_PATH = os.path.join(SCRIPT_DIR, 'Wave2.png')
+GOSTAR_LOGO_PATH = os.path.join(SCRIPT_DIR, 'gostar_logo.png')
+
+# Helper function to convert image to base64 for embedding
+def get_base64_image(image_path):
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    return None
+
+# Get base64 versions for HTML embedding
+LOGO_B64 = get_base64_image(LOGO_PATH)
+SLOGAN_B64 = get_base64_image(SLOGAN_PATH)
+WAVE_B64 = get_base64_image(WAVE_PATH)
+GOSTAR_LOGO_B64 = get_base64_image(GOSTAR_LOGO_PATH)
 
 # Page configuration
 st.set_page_config(
@@ -98,11 +114,29 @@ st.markdown(f"""
     .wave-header {{
         background: linear-gradient(135deg, {BRAND["deep_blue"]} 0%, #0D2654 100%);
         padding: 30px; border-radius: 12px; margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
     }}
-    .wave-header h1 {{ color: {BRAND["white"]} !important; margin: 0; }}
-    .wave-header .tagline {{ color: {BRAND["magenta_pink"]}; font-size: 1.1em; font-weight: 500; margin-top: 8px; }}
+    .wave-header h1 {{ color: {BRAND["white"]} !important; margin: 0; position: relative; z-index: 2; }}
+    .wave-header .tagline {{ color: {BRAND["magenta_pink"]}; font-size: 1.1em; font-weight: 500; margin-top: 8px; position: relative; z-index: 2; }}
+    .wave-header .wave-bg {{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 300px;
+        opacity: 0.3;
+        z-index: 1;
+    }}
     
-    .brand-footer {{ text-align: center; padding: 30px 0; margin-top: 40px; border-top: 2px solid {BRAND["soft_lavender"]}; }}
+    .brand-footer {{ 
+        text-align: center; 
+        padding: 40px 0; 
+        margin-top: 50px; 
+        border-top: 2px solid {BRAND["soft_lavender"]}; 
+        background: linear-gradient(180deg, {BRAND["white"]} 0%, {BRAND["soft_lavender"]}30 100%);
+    }}
+    .brand-footer img.footer-logo {{ max-width: 120px; margin-bottom: 10px; }}
+    .brand-footer img.footer-slogan {{ max-width: 160px; margin-bottom: 15px; }}
     
     .slogan-gradient {{
         background: linear-gradient(90deg, {BRAND["light_blue"]} 0%, {BRAND["violet"]} 50%, {BRAND["magenta_pink"]} 100%);
@@ -121,6 +155,47 @@ def load_data():
     return get_sample_data()
 
 data = load_data()
+
+
+# =============================================================================
+# HELPER: Wave Header with background
+# =============================================================================
+def render_wave_header(title, tagline=None):
+    wave_img = f'<img src="data:image/png;base64,{WAVE_B64}" class="wave-bg">' if WAVE_B64 else ''
+    tagline_html = f'<div class="tagline">{tagline}</div>' if tagline else ''
+    st.markdown(f"""
+    <div class="wave-header">
+        {wave_img}
+        <h1>{title}</h1>
+        {tagline_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# =============================================================================
+# HELPER: Brand Footer with Logo and Slogan
+# =============================================================================
+def render_footer():
+    logo_html = f'<img src="data:image/png;base64,{LOGO_B64}" class="footer-logo"><br>' if LOGO_B64 else f'<div style="font-size: 1.5em; font-weight: 700; color: {BRAND["deep_blue"]}; margin-bottom: 8px;">excelra</div>'
+    slogan_html = f'<img src="data:image/png;base64,{SLOGAN_B64}" class="footer-slogan">' if SLOGAN_B64 else f'<span class="slogan-gradient">Where data means more</span>'
+    
+    st.markdown(f"""
+    <div class="brand-footer">
+        {logo_html}
+        {slogan_html}
+        <div style="color: #888; font-size: 0.85em; margin-top: 15px;">Tahoe-100M + GOSTAR Integration Demo | Prototype</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# =============================================================================
+# HELPER: GOSTAR Logo Badge
+# =============================================================================
+def gostar_badge_html():
+    if GOSTAR_LOGO_B64:
+        return f'<img src="data:image/png;base64,{GOSTAR_LOGO_B64}" style="height: 28px; vertical-align: middle;">'
+    else:
+        return f'<span class="gostar-badge">GOSTAR</span>'
 
 
 # =============================================================================
@@ -175,12 +250,7 @@ Integration of **Tahoe-100M** perturbation data with **GOSTAR** structure-activi
 # SCREEN: Overview
 # =============================================================================
 if selected_screen == "Overview":
-    st.markdown(f"""
-    <div class="wave-header">
-        <h1>Tahoe-100M + GOSTAR Integration</h1>
-        <div class="tagline">Connecting perturbation biology with structure-activity data</div>
-    </div>
-    """, unsafe_allow_html=True)
+    render_wave_header("Tahoe-100M + GOSTAR Integration", "Connecting perturbation biology with structure-activity data")
     
     st.markdown("""
     <div class="info-box">
@@ -203,6 +273,8 @@ if selected_screen == "Overview":
     
     st.subheader("The Integration Concept")
     
+    gostar_logo = gostar_badge_html()
+    
     col1, col2, col3 = st.columns([2, 1, 2])
     with col1:
         st.markdown(f'<span class="tahoe-badge">TAHOE-100M</span>', unsafe_allow_html=True)
@@ -219,7 +291,7 @@ if selected_screen == "Overview":
         <div style="text-align: center; color: {BRAND['deep_blue']}; font-weight: 600;">Data Bridge</div>
         """, unsafe_allow_html=True)
     with col3:
-        st.markdown(f'<span class="gostar-badge">GOSTAR</span>', unsafe_allow_html=True)
+        st.markdown(gostar_logo, unsafe_allow_html=True)
         st.markdown("""
         - Chemical structures
         - Structure-activity relationships
@@ -252,17 +324,15 @@ if selected_screen == "Overview":
     fig.update_yaxes(tickfont=dict(color=BRAND["deep_blue"]))
     
     st.plotly_chart(fig, use_container_width=True)
+    
+    render_footer()
 
 
 # =============================================================================
 # SCREEN: Compound-Cell Response Network
 # =============================================================================
 elif selected_screen == "Compound-Cell Network":
-    st.markdown(f"""
-    <div class="wave-header">
-        <h1>Compound-Cell Response Network</h1>
-    </div>
-    """, unsafe_allow_html=True)
+    render_wave_header("Compound-Cell Response Network")
     
     st.markdown("""
     <div class="info-box">
@@ -340,13 +410,15 @@ elif selected_screen == "Compound-Cell Network":
     col1.metric("Nodes (Compounds)", G.number_of_nodes())
     col2.metric("Edges (Similar Pairs)", G.number_of_edges())
     col3.metric("Connected Components", nx.number_connected_components(G))
+    
+    render_footer()
 
 
 # =============================================================================
 # SCREEN: MoA Landscape (3D)
 # =============================================================================
 elif selected_screen == "MoA Landscape":
-    st.markdown(f'<div class="wave-header"><h1>Mechanism of Action Landscape</h1></div>', unsafe_allow_html=True)
+    render_wave_header("Mechanism of Action Landscape")
     
     st.markdown("""
     <div class="info-box">
@@ -383,13 +455,15 @@ elif selected_screen == "MoA Landscape":
         height=700, paper_bgcolor='white', margin=dict(l=0, r=0, t=30, b=0), font_family="Poppins")
     
     st.plotly_chart(fig, use_container_width=True)
+    
+    render_footer()
 
 
 # =============================================================================
 # SCREEN: Drug Response Trajectory (Sankey)
 # =============================================================================
 elif selected_screen == "Drug Response Trajectory":
-    st.markdown(f'<div class="wave-header"><h1>Drug Response Trajectory</h1></div>', unsafe_allow_html=True)
+    render_wave_header("Drug Response Trajectory")
     
     st.markdown("""
     <div class="info-box">
@@ -432,7 +506,7 @@ elif selected_screen == "Drug Response Trajectory":
     st.plotly_chart(fig, use_container_width=True)
     
     if compound_info['gostar_match']:
-        st.markdown("### GOSTAR Intelligence")
+        st.markdown(f"### {gostar_badge_html()} Intelligence", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("**Related Compounds (same target)**")
@@ -445,13 +519,15 @@ elif selected_screen == "Drug Response Trajectory":
             st.markdown(f"- Selectivity score: {compound_info['selectivity_score']:.2f}")
             st.markdown(f"- LogP: {compound_info['logP']:.2f}")
             st.markdown(f"- MW: {compound_info['molecular_weight']:.1f} Da")
+    
+    render_footer()
 
 
 # =============================================================================
 # SCREEN: Cell Line Sensitivity Radar
 # =============================================================================
 elif selected_screen == "Cell Line Sensitivity":
-    st.markdown(f'<div class="wave-header"><h1>Cell Line Sensitivity Profiles</h1></div>', unsafe_allow_html=True)
+    render_wave_header("Cell Line Sensitivity Profiles")
     
     st.markdown("""
     <div class="info-box">
@@ -488,13 +564,15 @@ elif selected_screen == "Cell Line Sensitivity":
         comp_data.columns = ['Compound', 'Target Class', 'Primary Target', 'IC50 (nM)', 'Stage', 'GOSTAR']
         comp_data['GOSTAR'] = comp_data['GOSTAR'].map({True: '✓', False: '✗'})
         st.dataframe(comp_data, use_container_width=True, hide_index=True)
+    
+    render_footer()
 
 
 # =============================================================================
 # SCREEN: Activity Cliff Detection
 # =============================================================================
 elif selected_screen == "Activity Cliff Detection":
-    st.markdown(f'<div class="wave-header"><h1>Activity Cliff Detection</h1></div>', unsafe_allow_html=True)
+    render_wave_header("Activity Cliff Detection")
     
     st.markdown("""
     <div class="info-box">
@@ -538,13 +616,15 @@ elif selected_screen == "Activity Cliff Detection":
             fig.update_layout(barmode='group', xaxis_tickangle=-45, yaxis_title='Response Score',
                 height=400, paper_bgcolor='white', plot_bgcolor='white', font_family="Poppins")
             st.plotly_chart(fig, use_container_width=True)
+    
+    render_footer()
 
 
 # =============================================================================
 # SCREEN: Target Deconvolution
 # =============================================================================
 elif selected_screen == "Target Deconvolution":
-    st.markdown(f'<div class="wave-header"><h1>Target Deconvolution Dashboard</h1></div>', unsafe_allow_html=True)
+    render_wave_header("Target Deconvolution Dashboard")
     
     st.markdown("""
     <div class="info-box">
@@ -583,15 +663,5 @@ elif selected_screen == "Target Deconvolution":
     
     st.markdown("### Detailed Match Table")
     st.dataframe(corr_df.head(20), use_container_width=True, hide_index=True)
-
-
-# =============================================================================
-# FOOTER
-# =============================================================================
-st.markdown(f"""
-<div class="brand-footer">
-    <div style="font-size: 1.5em; font-weight: 700; color: {BRAND['deep_blue']}; margin-bottom: 8px;">excelra</div>
-    <div><span class="slogan-gradient">Where data means more</span></div>
-    <div style="color: #888; font-size: 0.85em; margin-top: 15px;">Tahoe-100M + GOSTAR Integration Demo | Prototype</div>
-</div>
-""", unsafe_allow_html=True)
+    
+    render_footer()
