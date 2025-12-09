@@ -64,8 +64,8 @@ def find_asset(possible_names):
     return None
 
 # Find logo and slogan with various possible names
-LOGO_PATH = find_asset(['Logo.png', 'logo.png', 'LOGO.png', 'Logo.PNG', 'excelra_logo.png', 'excelra-logo.png'])
-SLOGAN_PATH = find_asset(['Slogan.png', 'slogan.png', 'SLOGAN.png', 'Slogan.PNG', 'tagline.png'])
+LOGO_PATH = 'assets/Logo.png'
+SLOGAN_PATH = 'assets/Slogan.png'
 WAVE_PATH = find_asset(['Wave.png', 'wave.png', 'WAVE.png', 'Wave.PNG'])
 GOSTAR_LOGO_PATH = find_asset(['gostar_logo.png', 'GOSTAR_logo.png', 'gostar-logo.png', 'GOSTAR.png'])
 
