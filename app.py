@@ -33,42 +33,6 @@ CHART_COLORS = [
     "#1E3A5F", "#E3D9F2", "#C76BA3", "#4A90A4", "#7B5EA7",
 ]
 
-# =============================================================================
-# ASSET HELPERS - Case insensitive file finding
-# =============================================================================
-def find_asset(possible_names):
-    """Find an asset file, trying multiple possible filenames (case-insensitive)."""
-    assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
-    
-    # If assets folder doesn't exist, try current directory
-    if not os.path.exists(assets_dir):
-        assets_dir = 'assets'
-    
-    if not os.path.exists(assets_dir):
-        return None
-    
-    # Get all files in assets directory
-    try:
-        files_in_dir = os.listdir(assets_dir)
-    except:
-        return None
-    
-    # Create lowercase mapping
-    file_map = {f.lower(): f for f in files_in_dir}
-    
-    # Try each possible name
-    for name in possible_names:
-        if name.lower() in file_map:
-            return os.path.join(assets_dir, file_map[name.lower()])
-    
-    return None
-
-# Find logo and slogan with various possible names
-LOGO_PATH = 'assets/Logo.png'
-SLOGAN_PATH = 'assets/Slogan.png'
-WAVE_PATH = find_asset(['Wave.png', 'wave.png', 'WAVE.png', 'Wave.PNG'])
-GOSTAR_LOGO_PATH = find_asset(['gostar_logo.png', 'GOSTAR_logo.png', 'gostar-logo.png', 'GOSTAR.png'])
-
 # Page configuration
 st.set_page_config(
     page_title="Tahoe-100M + GOSTAR | Excelra",
@@ -132,7 +96,6 @@ st.markdown(f"""
     .wave-header .tagline {{ color: {BRAND["magenta_pink"]}; font-size: 1.1em; font-weight: 500; margin-top: 8px; }}
     
     .brand-footer {{ text-align: center; padding: 30px 0; margin-top: 40px; border-top: 2px solid {BRAND["soft_lavender"]}; }}
-    .brand-footer .tagline {{ color: {BRAND["deep_blue"]}; font-size: 1.1em; font-weight: 500; }}
     
     .slogan-gradient {{
         background: linear-gradient(90deg, {BRAND["light_blue"]} 0%, {BRAND["violet"]} 50%, {BRAND["magenta_pink"]} 100%);
@@ -140,7 +103,6 @@ st.markdown(f"""
         font-weight: 500; font-style: italic;
     }}
     
-    /* Sidebar border */
     [data-testid="stSidebar"] {{ border-right: 1px solid {BRAND["soft_lavender"]}; }}
 </style>
 """, unsafe_allow_html=True)
@@ -155,39 +117,20 @@ data = load_data()
 
 
 # =============================================================================
-# SIDEBAR - Using Streamlit native image loading
+# SIDEBAR
 # =============================================================================
 
-# Add some spacing at top
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# Logo - use Streamlit's native image function
-if LOGO_PATH and os.path.exists(LOGO_PATH):
-    col1, col2, col3 = st.sidebar.columns([1, 2, 1])
-    with col2:
-        st.image(LOGO_PATH, use_container_width=True)
-else:
-    st.sidebar.markdown(f"""
-    <div style="text-align: center; padding: 10px;">
-        <span style="font-size: 1.6em; font-weight: 700; color: {BRAND['deep_blue']};">excelra</span>
-    </div>
-    """, unsafe_allow_html=True)
+# Logo
+st.sidebar.image('assets/Logo.png', width=150)
 
-# Slogan - use Streamlit's native image function
-if SLOGAN_PATH and os.path.exists(SLOGAN_PATH):
-    col1, col2, col3 = st.sidebar.columns([1, 3, 1])
-    with col2:
-        st.image(SLOGAN_PATH, use_container_width=True)
-else:
-    st.sidebar.markdown(f"""
-    <div style="text-align: center; padding: 5px;">
-        <span class="slogan-gradient" style="font-size: 0.75em;">Where data means more</span>
-    </div>
-    """, unsafe_allow_html=True)
+# Slogan
+st.sidebar.image('assets/Slogan.png', width=180)
 
 st.sidebar.markdown("---")
 
-# Navigation WITHOUT icons
+# Navigation
 screens = [
     "Overview",
     "Compound-Cell Network",
@@ -273,7 +216,6 @@ if selected_screen == "Overview":
     
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
     
-    # Bar chart with SOLID deep blue colour
     st.subheader("Compound Distribution by Target Class")
     
     target_counts = data['compounds']['target_class'].value_counts()
@@ -636,7 +578,7 @@ elif selected_screen == "Target Deconvolution":
 st.markdown(f"""
 <div class="brand-footer">
     <div style="font-size: 1.5em; font-weight: 700; color: {BRAND['deep_blue']}; margin-bottom: 8px;">excelra</div>
-    <div class="tagline"><span class="slogan-gradient">Where data means more</span></div>
+    <div><span class="slogan-gradient">Where data means more</span></div>
     <div style="color: #888; font-size: 0.85em; margin-top: 15px;">Tahoe-100M + GOSTAR Integration Demo | Prototype</div>
 </div>
 """, unsafe_allow_html=True)
