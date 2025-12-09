@@ -11,9 +11,12 @@ import numpy as np
 import networkx as nx
 import os
 
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Import sample data generator
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), 'data'))
+sys.path.append(os.path.join(SCRIPT_DIR, 'data'))
 from sample_data import get_sample_data, generate_differential_expression, generate_pathway_enrichment
 
 # =============================================================================
@@ -32,6 +35,10 @@ CHART_COLORS = [
     "#0A1E4A", "#A24DBE", "#E04F8A", "#B3E0F2", "#5C3D7A",
     "#1E3A5F", "#E3D9F2", "#C76BA3", "#4A90A4", "#7B5EA7",
 ]
+
+# Asset paths (absolute)
+LOGO_PATH = os.path.join(SCRIPT_DIR, 'assets', 'Logo.png')
+SLOGAN_PATH = os.path.join(SCRIPT_DIR, 'assets', 'Slogan.png')
 
 # Page configuration
 st.set_page_config(
@@ -123,10 +130,16 @@ data = load_data()
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
 # Logo
-st.sidebar.image('assets/Logo.png', width=150)
+if os.path.exists(LOGO_PATH):
+    st.sidebar.image(LOGO_PATH, width=150)
+else:
+    st.sidebar.markdown(f"<div style='text-align:center;font-size:1.6em;font-weight:700;color:{BRAND['deep_blue']};'>excelra</div>", unsafe_allow_html=True)
 
 # Slogan
-st.sidebar.image('assets/Slogan.png', width=180)
+if os.path.exists(SLOGAN_PATH):
+    st.sidebar.image(SLOGAN_PATH, width=180)
+else:
+    st.sidebar.markdown(f"<div style='text-align:center;'><span class='slogan-gradient' style='font-size:0.75em;'>Where data means more</span></div>", unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
 
